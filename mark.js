@@ -47,7 +47,7 @@ client.on('message', message => {
 	var arr = message.content.split(" ");
 	console.log(message.author.toString() + ": " + message.content);
         var author = message.author.toString();
-	if(message.mentions.users.first() == client.user){
+	if(message.mentions.users.first() == client.user||message.channel.type === 'dm'){
 			console.log("Sending shitpost");
 			epichal.reply(message.cleanContent.substr(message.cleanContent.indexOf(" " + 1)),(err, reply) =>{ 
 				message.channel.send(reply);
