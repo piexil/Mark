@@ -1,11 +1,11 @@
 const Discord = require('discord.js');
 const promiseWhile = require("promise-while");
 var config = require('./config.js')
-const jsmegahal = require('jsmegahal');
+var EpicHAL = require('epichal');
 var client = new Discord.Client();
 
 var userMsgs = [];
-var megahal = new jsmegahal(2);
+var epichal = EpicHAL();
 
 client.on('ready', () => {
 	console.log('I am ready!');
@@ -22,7 +22,7 @@ async function getMsgs(chan){
                                 var size = 100;
                                 var epoch = 0;
                                 try{
-                                while(size != 0){
+                                while(size == 100){
                                         const messages = await chan.fetchMessages({limit: size,before: epoch})
                                         console.log(messages.size + " messages fetched");
                                         messages.forEach( message => {
@@ -30,7 +30,7 @@ async function getMsgs(chan){
                                                         var arr = message.content.split(" ");
                                                         console.log(message.id.toString() + " : " + message.author.toString() +
                                                                 ": " + message.content);
-                                                        megahal.add(message.cleanContent);
+                                                        epichal.learn(message.cleanContent);
                                                         //console.log(author + "'s array: " + userMsgs[author]);
                                                         size = messages.size;
                                                         epoch = message.id;
@@ -47,12 +47,12 @@ client.on('message', message => {
 	var arr = message.content.split(" ");
 	console.log(message.author.toString() + ": " + message.content);
         var author = message.author.toString();
-
-	megahal.add(message.cleanContent);
 	if(message.mentions.users.first() == client.user){
-			console.log("Sending shitpost"); 
-			var res = megahal.getReplyFromSentence(message.cleanContent);
-			message.channel.send(res);
+			console.log("Sending shitpost");
+			epichal.reply(message.cleanContent.substr(message.cleanContent.indexOf(" " + 1)),(err, reply) =>{ 
+				message.channel.send(reply);
+				epichal.learn(message.cleanContent);
+			});
 	}
 	}
 });
