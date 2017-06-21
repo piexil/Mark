@@ -17,11 +17,13 @@ client.on('ready', () => {
                                 .then(messages => {
                                         console.log(messages.size + " messages fetched");
                                         messages.array().forEach( message => {
-                                                var arr = message.content.split(" ");
+                                                if(message.author.bot == false){
+						var arr = message.content.split(" ");
                                                 console.log(message.author.toString() + ": " + message.content);
                                                 arr.forEach(obj=>userMsgs.push(obj));
                                                 //console.log(author + "'s array: " + userMsgs[author]);
                                                 size = messages.size;
+						}
                                         });
                                 })
                                 .catch(console.error));
@@ -36,14 +38,17 @@ var useUpperCase = function(wordList) {
 }
 
 client.on('message', message => {
- 	var arr = message.content.split(" ");
+ 	if(message.author.bot == false){
+	var arr = message.content.split(" ");
 	console.log(message.author.toString() + ": " + message.content);
         var author = message.author.toString();
+
 	arr.forEach(obj=>userMsgs.push(obj));
 	if(message.mentions.users.first() == client.user){
 			console.log("Sending shitpost"); 
 			var qoutes = new MarkovChain(userMsgs.join(" "));
 			message.channel.send((qoutes.start(useUpperCase).end(10).process()));
+	}
 	}
 });
 
