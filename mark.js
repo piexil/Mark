@@ -1,21 +1,21 @@
 const Discord = require('discord.js');
 const promiseWhile = require("promise-while");
 var config = require('./config.js')
-var EpicHAL = require('epichal');
+jsmegahal = require('jsmegahal');
 var client = new Discord.Client();
-
+var data = []
 var userMsgs = [];
-var epichal = EpicHAL();
+var megahal = new jsmegahal(4);
 
 client.on('ready', () => {
 	console.log('I am ready!');
 	client.guilds.first().channels.array().forEach(chan => {
 		if(chan.type == "text"){
 			console.log("Conencted to channel: " + chan.name);
-			getMsgs(chan);      
-                                
+			getMsgs(chan);                                
 		}
 	});
+
 });
 async function getMsgs(chan){
                                 console.log("Entering ASYNC");
@@ -30,7 +30,7 @@ async function getMsgs(chan){
                                                         var arr = message.content.split(" ");
                                                         console.log(message.id.toString() + " : " + message.author.toString() +
                                                                 ": " + message.content);
-                                                        epichal.learn(message.cleanContent);
+                                                        megahal.add(message.cleanContent.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,""));
                                                         //console.log(author + "'s array: " + userMsgs[author]);
                                                         size = messages.size;
                                                         epoch = message.id;
@@ -47,14 +47,15 @@ client.on('message', message => {
 	var arr = message.content.split(" ");
 	console.log(message.author.toString() + ": " + message.content);
         var author = message.author.toString();
-	if(message.mentions.users.first() == client.user||message.channel.type === 'dm'){
+	if(message.mentions.users.first() == client.user||message.channel.type === 'dm' || message.content.toUpperCase().indexOf('MARK') > -1 || Math.floor(Math.random() * Math.floor(100)) > 98 ){
 			console.log("Sending shitpost");
-			epichal.reply(message.cleanContent.substr(message.cleanContent.indexOf(" " + 1)),(err, reply) =>{ 
-				message.channel.send(reply);
-				epichal.learn(message.cleanContent);
-			});
-	}
+			megahal.add(message.cleanContent); 
+				
+				message.channel.send(megahal.getReplyFromSentence(message.cleanContent.replace(/mark/ig,"")));
+				
+	
+	}	
 	}
 });
 
-client.login(api_key);
+client.login(config.api_key);
